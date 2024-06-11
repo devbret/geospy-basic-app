@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>GeoSpy Basic API App</title>
+        <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+        <style>
+            body {
+                font-family: 'Arial', sans-serif;
+                margin: 0;
+                padding: 0;
+                background-color: #121212;
+                color: #ffffff;
+            }
+            .container {
+                max-width: 800px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+            h1 {
+                text-align: center;
+                color: #ff00ff;
+                margin-bottom: 30px;
+            }
+            input[type='file'] {
+                display: block;
+                margin: 20px auto;
+                padding: 10px 20px;
+                border: 2px solid #00ffff;
+                background-color: #1e1e1e;
+                color: #00ffff;
+                cursor: pointer;
+                font-size: 16px;
+                text-align: center;
+                border-radius: 5px;
+                transition: background-color 0.3s, color 0.3s;
+            }
+            input[type='file']:hover {
+                background-color: #00ffff;
+                color: #1e1e1e;
+            }
+            .photo-container {
+                background-color: #1e1e1e;
+                border: 2px solid #ff00ff;
+                border-radius: 10px;
+                padding: 20px;
+                margin-bottom: 20px;
+                transition: transform 0.2s;
+            }
+            .photo-container:hover {
+                transform: scale(1.02);
+            }
+            .photo-container img {
+                max-width: 100%;
+                height: auto;
+                border-radius: 10px;
+                cursor: zoom-in;
+                margin-bottom: 10px;
+            }
+            .photo-container p {
+                margin: 5px 0;
+            }
+            .modal {
+                display: none;
+                position: fixed;
+                z-index: 1000;
+                padding-top: 60px;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                overflow: auto;
+                background-color: rgba(0, 0, 0, 0.9);
+            }
+            .modal-content {
+                margin: auto;
+                display: block;
+                max-width: 90%;
+                border-radius: 10px;
+            }
+            .close {
+                position: absolute;
+                top: 15px;
+                right: 35px;
+                color: #ff00ff;
+                font-size: 40px;
+                font-weight: bold;
+                transition: 0.3s;
+                cursor: pointer;
+            }
+            .close:hover,
+            .close:focus {
+                color: #bbb;
+                text-decoration: none;
+            }
+            @media (max-width: 600px) {
+                .container {
+                    padding: 10px;
+                }
+                h1 {
+                    font-size: 24px;
+                }
+                input[type='file'] {
+                    font-size: 14px;
+                    padding: 8px 15px;
+                }
+                .photo-container {
+                    padding: 15px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>GeoSpy Basic API App</h1>
+            <input type="file" id="fileInput" accept=".json" />
+            <div id="photo-info"></div>
+        </div>
+
+        <div id="myModal" class="modal">
+            <span class="close">&times;</span>
+            <img class="modal-content" id="img01" />
+        </div>
+
+        <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+        <script>
+            document.getElementById('fileInput').addEventListener('change', function (event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        const data = JSON.parse(e.target.result);
+                        displayPhotoInfo(data);
+                    };
+                    reader.readAsText(file);
+                }
+            });
+
+            function displayPhotoInfo(data) {
+                const photoInfoContainer = document.getElementById('photo-info');
+                photoInfoContainer.innerHTML = '';
+
+                data.forEach((photoData) => {
+                    for (const [imagePath, info] of Object.entries(photoData)) {
+                        const container = document.createElement('div');
+                        container.className = 'photo-container';
+
+                        const img = document.createElement('img');
+                        img.src = imagePath;
+                        img.onclick = function () {
+                            openModal(imagePath);
+                        };
+
+                        const city = document.createElement('p');
+                        city.textContent = `City: ${info.city}`;
+
+                        const country = document.createElement('p');
+                        country.textContent = `Country: ${info.country}`;
+
+                        const explanation = document.createElement('p');
+                        explanation.textContent = `Explanation: ${info.explanation}`;
+
+                        const latitude = document.createElement('p');
+                        latitude.textContent = `Latitude: ${info.latitude !== null ? info.latitude : 'N/A'}`;
+
+                        const longitude = document.createElement('p');
+                        longitude.textContent = `Longitude: ${info.longitude !== null ? info.longitude : 'N/A'}`;
+
+                        const state = document.createElement('p');
+                        state.textContent = `State: ${info.state}`;
+
+                        container.appendChild(img);
+                        container.appendChild(city);
+                        container.appendChild(country);
+                        container.appendChild(explanation);
+                        container.appendChild(latitude);
+                        container.appendChild(longitude);
+                        container.appendChild(state);
+
+                        if (info.latitude !== null && info.longitude !== null) {
+                            const mapContainer = document.createElement('div');
+                            const mapId = `map-${Math.random().toString(36).substr(2, 9)}`;
+                            mapContainer.id = mapId;
+                            mapContainer.style.height = '300px';
+                            mapContainer.style.marginTop = '20px';
+                            mapContainer.style.border = '2px solid #ff00ff';
+                            mapContainer.style.borderRadius = '10px';
+                            container.appendChild(mapContainer);
+
+                            photoInfoContainer.appendChild(container); /
+
+                            const map = L.map(mapId).setView([info.latitude, info.longitude], 13);
+
+                            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                            }).addTo(map);
+
+                            L.marker([info.latitude, info.longitude]).addTo(map).bindPopup(`${info.city}, ${info.country}`).openPopup();
+                        } else {
+                            photoInfoContainer.appendChild(container);
+                        }
+                    }
+                });
+            }
+
+            function openModal(imagePath) {
+                const modal = document.getElementById('myModal');
+                const modalImg = document.getElementById('img01');
+
+                modal.style.display = 'block';
+                modalImg.src = imagePath;
+
+                const span = document.getElementsByClassName('close')[0];
+                span.onclick = function () {
+                    modal.style.display = 'none';
+                };
+            }
+        </script>
+    </body>
+</html>
