@@ -8,7 +8,7 @@ from aiohttp import ClientTimeout
 
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s: %(message)s')
 
-API_TOKEN = "your_api_token_value"
+API_TOKEN = "api_key_here"
 API_BASE = "https://dev.geospy.ai"
 API_ENDPOINT = "/predict_v1"
 FULL_API_URL = f"{API_BASE}{API_ENDPOINT}"

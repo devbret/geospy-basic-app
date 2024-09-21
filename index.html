@@ -6,51 +6,67 @@
         <title>GeoSpy Basic API App</title>
         <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
         <style>
+            @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+
             body {
-                font-family: 'Arial', sans-serif;
+                font-family: 'Orbitron', sans-serif;
                 margin: 0;
                 padding: 0;
-                background-color: #121212;
-                color: #ffffff;
+                background-color: #0d0d0d;
+                color: #e0e0e0;
             }
+
             .container {
                 max-width: 800px;
                 margin: 0 auto;
                 padding: 20px;
             }
+
             h1 {
                 text-align: center;
-                color: #ff00ff;
+                color: #ff0090;
                 margin-bottom: 30px;
+                text-shadow: 0 0 10px rgba(255, 0, 144, 0.7);
             }
+
+            p {
+                font-family: sans-serif;
+            }
+
             input[type='file'] {
                 display: block;
                 margin: 20px auto;
-                padding: 10px 20px;
-                border: 2px solid #00ffff;
-                background-color: #1e1e1e;
-                color: #00ffff;
+                padding: 12px 24px;
+                border: 2px solid #00f0ff;
+                background-color: transparent;
+                color: #00f0ff;
                 cursor: pointer;
                 font-size: 16px;
                 text-align: center;
                 border-radius: 5px;
-                transition: background-color 0.3s, color 0.3s;
+                transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
+                box-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
             }
             input[type='file']:hover {
-                background-color: #00ffff;
-                color: #1e1e1e;
+                background-color: #00f0ff;
+                color: #0d0d0d;
+                box-shadow: 0 0 20px rgba(0, 240, 255, 1);
             }
+
             .photo-container {
-                background-color: #1e1e1e;
-                border: 2px solid #ff00ff;
+                background-color: rgba(20, 20, 20, 0.9);
+                border: 2px solid #ff0090;
                 border-radius: 10px;
                 padding: 20px;
                 margin-bottom: 20px;
-                transition: transform 0.2s;
+                transition: transform 0.2s, box-shadow 0.2s;
+                box-shadow: 0 0 15px rgba(255, 0, 144, 0.5);
             }
             .photo-container:hover {
                 transform: scale(1.02);
+                box-shadow: 0 0 25px rgba(255, 0, 144, 0.8);
             }
+
             .photo-container img {
                 max-width: 100%;
                 height: auto;
@@ -58,9 +74,15 @@
                 cursor: zoom-in;
                 margin-bottom: 10px;
             }
+
+            .photo-container img:hover {
+                box-shadow: 0 0 25px rgba(0, 240, 255, 0.8);
+            }
+
             .photo-container p {
                 margin: 5px 0;
             }
+
             .modal {
                 display: none;
                 position: fixed;
@@ -71,29 +93,39 @@
                 width: 100%;
                 height: 100%;
                 overflow: auto;
-                background-color: rgba(0, 0, 0, 0.9);
+                background-color: rgba(15, 15, 15, 0.95);
+                backdrop-filter: blur(5px);
             }
+
             .modal-content {
                 margin: auto;
                 display: block;
                 max-width: 90%;
                 border-radius: 10px;
+                box-shadow: 0 0 15px rgba(0, 240, 255, 0.5);
             }
+
             .close {
                 position: absolute;
                 top: 15px;
                 right: 35px;
-                color: #ff00ff;
+                color: #ff0090;
                 font-size: 40px;
                 font-weight: bold;
                 transition: 0.3s;
                 cursor: pointer;
+                text-shadow: 0 0 10px rgba(255, 0, 144, 0.7);
             }
             .close:hover,
             .close:focus {
-                color: #bbb;
-                text-decoration: none;
+                color: #ffffff;
+                text-shadow: 0 0 20px rgba(255, 0, 144, 1);
             }
+
+            .info-prefix {
+                font-weight: bolder;
+            }
+
             @media (max-width: 600px) {
                 .container {
                     padding: 10px;
@@ -153,22 +185,22 @@
                         };
 
                         const city = document.createElement('p');
-                        city.textContent = `City: ${info.city}`;
+                        city.innerHTML = `<span class="info-prefix">City:</span> ${info.city}`;
 
                         const country = document.createElement('p');
-                        country.textContent = `Country: ${info.country}`;
+                        country.innerHTML = `<span class="info-prefix">Country:</span> ${info.country}`;
 
                         const explanation = document.createElement('p');
-                        explanation.textContent = `Explanation: ${info.explanation}`;
+                        explanation.innerHTML = `<span class="info-prefix">Explanation:</span> ${info.explanation}`;
 
                         const latitude = document.createElement('p');
-                        latitude.textContent = `Latitude: ${info.latitude !== null ? info.latitude : 'N/A'}`;
+                        latitude.innerHTML = `<span class="info-prefix">Latitude:</span> ${info.latitude !== null ? info.latitude : 'N/A'}`;
 
                         const longitude = document.createElement('p');
-                        longitude.textContent = `Longitude: ${info.longitude !== null ? info.longitude : 'N/A'}`;
+                        longitude.innerHTML = `<span class="info-prefix">Longitude:</span> ${info.longitude !== null ? info.longitude : 'N/A'}`;
 
                         const state = document.createElement('p');
-                        state.textContent = `State: ${info.state}`;
+                        state.innerHTML = `<span class="info-prefix">State:</span> ${info.state}`;
 
                         container.appendChild(img);
                         container.appendChild(city);
